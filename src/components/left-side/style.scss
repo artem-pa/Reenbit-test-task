@@ -1,0 +1,109 @@
+@import '/src/assets/styles/variables';
+
+
+.left-side {
+  border-right: 1px solid $color-gray-200;
+  display: flex;
+  flex-direction: column;
+  .top {
+    display: flex;
+    flex-direction: column;
+    row-gap: 50px;
+    padding: 10px;
+    border-bottom: 2px solid $color-gray-200;
+    background: $color-gray-100;
+    .user__img {
+      display: block;
+      width: 50px;
+      height: 50px;
+      background: $color-green;
+      border-radius: 50%;
+    }
+    .search {
+      position: relative;
+      color: $color-gray-400;
+      &::before {
+        content: '🔎︎';
+        position: absolute;
+        left: 7px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      input {
+        width: 100%;
+        height: 30px;
+        border-radius: 15px;
+        color: inherit;
+        padding: 0 10px 0 30px;
+        &:focus {
+          outline: 1px solid $color-cyan;
+        }
+        &::placeholder {
+          color: #c7c0c0;
+        }
+      }
+    }
+  }
+
+  .bottom {
+    padding-left: 10px;
+    overflow-y: auto;
+    .title {
+      font-size: 1.5em;
+      color: $color-cyan;
+      margin: 50px 0;
+    }
+
+    .contact {
+      display: grid;
+      grid-template-areas:
+        "img  name  time"
+        "img  msg   .";
+      grid-template-columns: 50px auto 80px;
+      column-gap: 10px;
+      align-items: center;
+      padding: 10px 10px 10px 0;
+      border-bottom: 1px solid $color-gray-200;
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &__img {
+        grid-area: img;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+      &__name {
+        grid-area: name;
+        font-weight: bold;
+      }
+      &__message {
+        grid-area: msg;
+        color: $color-gray-400;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      &__time {
+        grid-area: time;
+        font-size: 0.8em;
+        color: $color-gray-300;
+        justify-self: flex-end;
+      }
+    }
+  }
+}
+
+/* temp styles */
+.fake-avatar {
+  width: 100%;
+  height: 100%;
+  background: greenyellow;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  color: #fff;
+}

@@ -1,0 +1,104 @@
+@import '/src/assets/styles/variables';
+
+.right-side {
+  display: grid;
+  grid-template: auto 1fr 100px / 100%;
+
+  .top {
+    padding: 20px;
+    background: $color-gray-100;
+    border-bottom: 2px solid $color-gray-200;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+
+    .img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    .name {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+  }
+
+  .main {
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    .message {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      .text {
+        width: fit-content;
+        max-width: 80%;
+        min-height: 50px;
+        border-radius: 25px;
+        padding: 15px;
+        line-height: 20px;
+      }
+      .time {
+        padding: 0 15px;
+        font-size: 0.8em;
+        font-style: italic;
+        color: $color-gray-300;
+      }
+      &.input {
+        align-items: flex-start;
+        .text {
+          background: $color-blue;
+          color: #ffffff;
+        }
+      }
+      &.output {
+        align-items: flex-end;
+        .text {
+          background: #e0e0e0;
+          color: $color-gray-400;
+        }
+      }
+    }
+  }
+
+  .bottom {
+    padding: 25px 20px;
+    background: $color-gray-100;
+    border-top: 2px solid $color-gray-200;
+    position: relative;
+
+    input {
+      width: 100%;
+      height: 50px;
+      padding: 0 50px 0 20px;
+      border-radius: 25px;
+      &:focus {
+        outline: 1px solid $color-cyan;
+      }
+      &::placeholder {
+        color: #c7c0c0;
+      }
+    }
+    img {
+      width: 25px;
+      height: 25px;
+      position: absolute;
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      filter: invert(65%) sepia(0%) saturate(7%) hue-rotate(185deg) brightness(91%) contrast(89%);
+      transition: 0.2s;
+      cursor: pointer;
+      &:hover {
+        filter: invert(74%) sepia(6%) saturate(4726%) hue-rotate(170deg) brightness(93%) contrast(90%);
+      }
+      &:active {
+        scale: 0.8;
+      }
+    }
+    
+  }
+}
