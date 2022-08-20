@@ -1,4 +1,4 @@
-@import '/src/assets/styles/variables';
+@import "/src/assets/styles/variables";
 
 .right-side {
   display: grid;
@@ -28,7 +28,8 @@
     padding: 20px 10px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 10px;
+    overflow-y: auto;
     .message {
       display: flex;
       flex-direction: column;
@@ -42,7 +43,7 @@
         line-height: 20px;
       }
       .time {
-        padding: 0 15px;
+        padding: 0 15px 20px;
         font-size: 0.8em;
         font-style: italic;
         color: $color-gray-300;
@@ -99,6 +100,5 @@
         scale: 0.8;
       }
     }
-    
   }
 }
