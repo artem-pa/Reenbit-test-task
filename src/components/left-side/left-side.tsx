@@ -1,15 +1,30 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import './style.scss';
 import myAvatar from '../../assets/images/my_avatar.jpg';
 import { AppContext, ContextType } from '../../context/context';
+import { IUser } from '../../interfaces/interface';
 
 
 const LeftSide = () => {
   const { appData, setAppData, activeContact, setActiveContact }: ContextType = useContext(AppContext);
+  const [userList, setUserList] = useState<IUser[]>([])
+
+  useEffect(() => {
+    setUserList(appData);
+    sortUser();
+  }, [appData])
 
   const getDate = (dateNum: number): string => {
     return (new Date(dateNum)).toLocaleDateString('en-US', { dateStyle: 'medium' })
+  }
+
+  const sortUser = () => {
+    setUserList([...appData].sort((a,b) => {
+      const first = a.messages.slice(-1)[0].time;
+      let second = b.messages.slice(-1)[0].time;
+      return second - first;
+    }))
   }
 
 
@@ -29,7 +44,7 @@ const LeftSide = () => {
       <div className="bottom">
         <h1 className="title">Chats</h1>
         <ul className="contact-list">
-          {appData.map((user) => (
+          {userList.map((user) => (
             <li
               className="contact"
               key={user.id}

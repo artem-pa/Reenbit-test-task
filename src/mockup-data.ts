@@ -8,12 +8,33 @@ export const data: IUser[] = [
     messages: [
       {
         text: 'Hello)',
-        time: 1660990430000,
+        time: 1660991000000,
         isUserMessage: true
       },
       {
         text: 'You are the worst!',
-        time: 1660991430000
+        time: 1660991990000
+      }
+    ]
+  },
+  {
+    name: 'John Wick',
+    id: 'johnw',
+    avatar: 'johnw.png',
+    messages: [
+      {
+        text: 'Give me a work',
+        time: 1660115100000
+      },
+      {
+        text: 'Somebody please!',
+        time: 1660115700000,
+        isUserMessage: true
+      },
+      {
+        text: 'give this man a work',
+        time: 1660115750000,
+        isUserMessage: true
       }
     ]
   },
@@ -38,17 +59,6 @@ export const data: IUser[] = [
     ]
   },
   {
-    name: 'Velazquez',
-    id: 'velaz',
-    avatar: 'velaz.jpg',
-    messages: [
-      {
-        text: 'Quickly come to the meeting room 1B, we have a big issue',
-        time: 1660889400000
-      }
-    ]
-  },
-  {
     name: 'Barrera',
     id: 'barrera',
     avatar: 'barrera.png',
@@ -61,6 +71,17 @@ export const data: IUser[] = [
       {
         text: 'Hello)',
         time: 1660568100000
+      }
+    ]
+  },
+  {
+    name: 'Velazquez',
+    id: 'velaz',
+    avatar: 'velaz.jpg',
+    messages: [
+      {
+        text: 'Quickly come to the meeting room 1B, we have a big issue',
+        time: 1660889400000
       }
     ]
   }
