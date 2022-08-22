@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 
 import './style.scss';
 import myAvatar from '../../assets/images/my_avatar.jpg';
 import { AppContext, ContextType } from '../../context/context';
-import { IUser } from '../../interfaces/interface';
 
 
 const LeftSide = () => {
