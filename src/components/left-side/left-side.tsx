@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import './style.scss';
 import myAvatar from '../../assets/images/my_avatar.jpg';
@@ -7,24 +7,28 @@ import { IUser } from '../../interfaces/interface';
 
 
 const LeftSide = () => {
-  const { appData, setAppData, activeContact, setActiveContact }: ContextType = useContext(AppContext);
-  const [userList, setUserList] = useState<IUser[]>([])
+  const { appData, setAppData, setActiveContact }: ContextType = useContext(AppContext);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    setUserList(appData);
-    sortUser();
+  const sortedUsers = useMemo(() => {
+    console.log('sorted')
+    return [...appData].sort((a, b) => {
+      const first = a.messages.slice(-1)[0].time;
+      const second = b.messages.slice(-1)[0].time;
+      return second - first;
+    })
   }, [appData])
+
+  const searchedUsers = useMemo(() => {
+    console.log('filterd')
+    if (searchQuery === '') return sortedUsers;
+    return sortedUsers.filter(user => {
+      return user.name.toLowerCase().includes(searchQuery.toLowerCase());
+    })
+  }, [sortedUsers, searchQuery])
 
   const getDate = (dateNum: number): string => {
     return (new Date(dateNum)).toLocaleDateString('en-US', { dateStyle: 'medium' })
-  }
-
-  const sortUser = () => {
-    setUserList([...appData].sort((a,b) => {
-      const first = a.messages.slice(-1)[0].time;
-      let second = b.messages.slice(-1)[0].time;
-      return second - first;
-    }))
   }
 
 
@@ -33,18 +37,23 @@ const LeftSide = () => {
       <div className="top">
         <div className="user">
           <a href="/" className="user__img">
-            <img src={myAvatar} alt="" />
+            <img src={myAvatar} alt="my avatar" />
           </a>
         </div>
         <div className="search">
-          <input type="text" placeholder='Search or start new chat' />
+          <input
+            type="text"
+            placeholder='Search or start new chat'
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
         </div>
       </div>
 
       <div className="bottom">
         <h1 className="title">Chats</h1>
         <ul className="contact-list">
-          {userList.map((user) => (
+          {searchedUsers.map((user) => (
             <li
               className="contact"
               key={user.id}
@@ -63,6 +72,10 @@ const LeftSide = () => {
             </li>
           ))}
         </ul>
+        {searchedUsers.length !== 0
+          ? null
+          : <p className='no-results'>No results...</p>
+        }
       </div>
     </div>
   )

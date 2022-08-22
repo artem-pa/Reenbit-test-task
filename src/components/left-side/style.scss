@@ -103,5 +103,12 @@
         justify-self: flex-end;
       }
     }
+
+    .no-results {
+      padding-left: 10px;
+      font-size: 1.2em;
+      color: $color-gray-400;
+      overflow: hidden;
+    }
   }
 }
