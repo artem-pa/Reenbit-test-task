@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import './style.scss';
 import sendIcon from '../../assets/images/send_ico.svg';
+import './style.scss';
+
 import { IMessage, IUser } from '../../interfaces/interface';
 import { AppContext, ContextType } from '../../context/context';
-import { db } from '../../services/services';
+import { db, answer } from '../../services/services';
+
 
 const RightSide = () => {
   const { appData, setAppData, activeContact, setActiveContact }: ContextType = useContext(AppContext);
 
   const [newMessage, setNewMessage] = useState('');
   const [messageList, setMessageList] = useState<IMessage[]>([]);
-  // const listRef = useRef(messageList);
-  // listRef.current = messageList;
 
   useEffect(() => {
     if (activeContact !== null) {
@@ -23,16 +23,16 @@ const RightSide = () => {
 
   const sendMessage = () => {
     if (!newMessage) return;
-    const message: IMessage = {
-      text: newMessage,
-      time: Date.now(),
-      isUserMessage: true
-    };
-    uploadMessage(message);
-    // getAnswer();
+    uploadMessage(newMessage, true);
+    getAnswer();
   }
 
-  const uploadMessage = (message: IMessage) => {
+  const uploadMessage = (text: string, isUserMessage?: boolean) => {
+    const message = {
+      text: text,
+      time: Date.now(),
+      isUserMessage: isUserMessage
+    }
     db.uploadMessage(message, activeContact as IUser, setAppData);
     setNewMessage('');
   }
@@ -43,24 +43,19 @@ const RightSide = () => {
   }
 
   const getAnswer = () => {
-    fetch('https://api.chucknorris.io/jokes/random')
-      .then(res => res.json())
-      .then((res: any) => {
-        const message: IMessage = {
-          text: res.value,
-          time: Date.now() + 1e4
-        }
-        // setTimeout(() => setMessageList([...listRef.current, message]), 1e4);
-      })
+    const [minDelay, maxDelay] = [10e3, 15e3];
+    const delay = Math.random() * (maxDelay - minDelay) + minDelay;
+    console.log(delay)
+    setTimeout(() => answer.loadAnswer(uploadMessage), delay)
   }
 
   const getDate = (dateNumber: number): string => {
-    return (new Date(dateNumber).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' }))
+    return (new Date(dateNumber).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'long' }))
   }
 
   const shouldShowTime = (value: IMessage, index: number): boolean => {
     if (index === messageList.length - 1) return true;
-    if (messageList[index+1].time - value.time > 3.6e6) return true; //3.e6 ms = 1 h
+    if (messageList[index + 1].time - value.time > 3.6e6) return true; //3.e6 ms = 1 h
     if (
       (value.isUserMessage && !messageList[index + 1].isUserMessage) ||
       (!value.isUserMessage && messageList[index + 1].isUserMessage)
