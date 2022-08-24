@@ -22,7 +22,6 @@ class DataBase {
     finally {
       callback(this.getFullData());
     }
-
   }
 
   private loadData(): string | null {

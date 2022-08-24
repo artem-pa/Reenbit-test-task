@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useRef, useContext, useEffect, useState } from 'react';
+import { ToastContainer, toast, Zoom } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import sendIcon from '../../assets/images/send_ico.svg';
 import './style.scss';
@@ -9,7 +11,7 @@ import { db, answer } from '../../services/services';
 
 
 const RightSide = () => {
-  const { appData, setAppData, activeContact, setActiveContact }: ContextType = useContext(AppContext);
+  const { appData, setAppData, activeContact, setActiveContact, loadingContacts, setLoadingContacts }: ContextType = useContext(AppContext);
 
   const [newMessage, setNewMessage] = useState('');
   const [messageList, setMessageList] = useState<IMessage[]>([]);
@@ -17,9 +19,16 @@ const RightSide = () => {
   useEffect(() => {
     if (activeContact !== null) {
       setMessageList(activeContact.messages);
-      setActiveContact(appData[appData.findIndex(user => user.id === activeContact.id)])
+      setActiveContact(appData[appData.findIndex(user => user.id === activeContact.id)]);
+      scrollDown();
+      console.log('updated app-data', activeContact)
     }
-  }, [activeContact, appData])
+  }, [appData, activeContact])
+
+  const scrollDownRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef(loadingContacts);
+  loadingRef.current = loadingContacts
 
   const sendMessage = () => {
     if (!newMessage) return;
@@ -34,6 +43,7 @@ const RightSide = () => {
       isUserMessage: isUserMessage
     }
     db.uploadMessage(message, activeContact as IUser, setAppData);
+    if (!isUserMessage) notify(activeContact as IUser, message)
     setNewMessage('');
   }
 
@@ -45,12 +55,43 @@ const RightSide = () => {
   const getAnswer = () => {
     const [minDelay, maxDelay] = [10e3, 15e3];
     const delay = Math.random() * (maxDelay - minDelay) + minDelay;
-    console.log(delay)
-    setTimeout(() => answer.loadAnswer(uploadMessage), delay)
+    const loadingContact = { ...activeContact } as IUser;
+
+    updateLoadingContacts('add', loadingContact);
+    setTimeout(() => {
+      answer.loadAnswer(uploadMessage);
+      updateLoadingContacts('remove', loadingContact);
+    }, delay)
+  }
+
+  const notify = (contact: IUser, message: IMessage) => {
+    const toastBody = () => (
+      <div className='toast'>
+        <div className='toast__avatar'>
+          <img
+            src={require(`../../assets/images/${contact.avatar}`)}
+            alt="avatar"
+          />
+        </div>
+        <p className='toast__name'>{contact.name}</p>
+        <p className='toast__text'>{message.text}</p>
+      </div>
+    )
+
+    toast.info(toastBody, {
+      position: 'top-right',
+      autoClose: 3000,
+      transition: Zoom,
+      icon: false,
+      closeButton: false,
+      draggable: false,
+    })
+
+    
   }
 
   const getDate = (dateNumber: number): string => {
-    return (new Date(dateNumber).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'long' }))
+    return (new Date(dateNumber).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' }))
   }
 
   const shouldShowTime = (value: IMessage, index: number): boolean => {
@@ -61,6 +102,34 @@ const RightSide = () => {
       (!value.isUserMessage && messageList[index + 1].isUserMessage)
     ) return true;
     return false;
+  }
+
+  const updateLoadingContacts = (status: 'add' | 'remove', contact: IUser) => {
+    switch (status) {
+      case 'add':
+        setLoadingContacts([...loadingContacts, contact.id]);
+        return;
+      case 'remove':
+        const index = loadingRef.current.indexOf(contact.id)
+        if (index === -1) return;
+        const newArr = loadingRef.current;
+        newArr.splice(index, 1);
+        setLoadingContacts(newArr);
+        return;
+    }
+  }
+
+  const isLoader = () => {
+    return loadingContacts.includes((activeContact as IUser).id)
+  }
+
+  const scrollDown = () => {
+    setTimeout(() => {
+      (mainRef.current as HTMLDivElement).scrollTo({
+        top: (mainRef.current as HTMLDivElement).scrollHeight,
+        behavior: 'smooth'
+      })
+    }, 5);
   }
 
 
@@ -79,7 +148,7 @@ const RightSide = () => {
             </div>
             <p className="name">{activeContact.name}</p>
           </div>
-          <div className="main">
+          <div className="main" ref={mainRef}>
             {messageList.map((msg, i) => (
               <div key={msg.time} className={msg.isUserMessage ? 'message output' : 'message input'}>
                 <p className="text">{msg.text}</p>
@@ -90,6 +159,16 @@ const RightSide = () => {
                 }
               </div>
             ))}
+            {
+              isLoader()
+                ?
+                <div className='message__loader'>
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                </div>
+                : null
+            }
           </div>
           <div className="bottom">
             <input
@@ -102,6 +181,7 @@ const RightSide = () => {
           </div>
         </>
       }
+      <ToastContainer limit={5}/>
     </div>
   )
 }
