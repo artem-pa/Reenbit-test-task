@@ -112,3 +112,12 @@
     }
   }
 }
+
+@media screen and (max-width: 768px) {
+  .left-side {
+    transition: 0.5s;
+    &.slide-left {
+      transform: translateX(-100%);
+    }
+  }
+}

@@ -6,11 +6,10 @@ import { AppContext, ContextType } from '../../context/context';
 
 
 const LeftSide = () => {
-  const { appData, setAppData, setActiveContact }: ContextType = useContext(AppContext);
+  const { appData, activeContact, setActiveContact }: ContextType = useContext(AppContext);
   const [searchQuery, setSearchQuery] = useState('');
 
   const sortedUsers = useMemo(() => {
-    console.log('sorted')
     return [...appData].sort((a, b) => {
       const first = a.messages.slice(-1)[0].time;
       const second = b.messages.slice(-1)[0].time;
@@ -19,7 +18,6 @@ const LeftSide = () => {
   }, [appData])
 
   const searchedUsers = useMemo(() => {
-    console.log('filterd')
     if (searchQuery === '') return sortedUsers;
     return sortedUsers.filter(user => {
       return user.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -32,7 +30,7 @@ const LeftSide = () => {
 
 
   return (
-    <div className="left-side">
+    <div className={activeContact ? 'left-side slide-left' : 'left-side' }>
       <div className="top">
         <div className="user">
           <a href="/" className="user__img">

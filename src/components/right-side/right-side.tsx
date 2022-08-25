@@ -3,6 +3,7 @@ import { ToastContainer, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import sendIcon from '../../assets/images/send_ico.svg';
+import backArrow from '../../assets/images/arrow.svg';
 import './style.scss';
 
 import { IMessage, IUser } from '../../interfaces/interface';
@@ -15,20 +16,25 @@ const RightSide = () => {
 
   const [newMessage, setNewMessage] = useState('');
   const [messageList, setMessageList] = useState<IMessage[]>([]);
+  const [localContact, setLocalContact] = useState<IUser | null>(null);
 
   useEffect(() => {
     if (activeContact !== null) {
-      setMessageList(activeContact.messages);
+      setLocalContact(activeContact);
       setActiveContact(appData[appData.findIndex(user => user.id === activeContact.id)]);
-      scrollDown();
-      console.log('updated app-data', activeContact)
     }
   }, [appData, activeContact])
 
-  const scrollDownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (localContact !== null) {
+      setMessageList(localContact.messages);
+      scrollDown();
+    }
+  }, [localContact])
+
   const mainRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(loadingContacts);
-  loadingRef.current = loadingContacts
+  loadingRef.current = loadingContacts;
 
   const sendMessage = () => {
     if (!newMessage) return;
@@ -42,8 +48,8 @@ const RightSide = () => {
       time: Date.now(),
       isUserMessage: isUserMessage
     }
-    db.uploadMessage(message, activeContact as IUser, setAppData);
-    if (!isUserMessage) notify(activeContact as IUser, message)
+    db.uploadMessage(message, localContact as IUser, setAppData);
+    if (!isUserMessage) notify(localContact as IUser, message)
     setNewMessage('');
   }
 
@@ -55,7 +61,7 @@ const RightSide = () => {
   const getAnswer = () => {
     const [minDelay, maxDelay] = [10e3, 15e3];
     const delay = Math.random() * (maxDelay - minDelay) + minDelay;
-    const loadingContact = { ...activeContact } as IUser;
+    const loadingContact = { ...localContact } as IUser;
 
     updateLoadingContacts('add', loadingContact);
     setTimeout(() => {
@@ -87,7 +93,7 @@ const RightSide = () => {
       draggable: false,
     })
 
-    
+
   }
 
   const getDate = (dateNumber: number): string => {
@@ -120,22 +126,22 @@ const RightSide = () => {
   }
 
   const isLoader = () => {
-    return loadingContacts.includes((activeContact as IUser).id)
+    return loadingContacts.includes((localContact as IUser).id)
   }
 
   const scrollDown = () => {
     setTimeout(() => {
       (mainRef.current as HTMLDivElement).scrollTo({
         top: (mainRef.current as HTMLDivElement).scrollHeight,
-        behavior: 'smooth'
+        behavior: 'auto'
       })
     }, 5);
   }
 
 
   return (
-    <div className="right-side">
-      {!activeContact
+    <div className ={!activeContact ? 'right-side' : 'right-side slide-left'}>
+      {!localContact
         ?
         <div className="placeholder">
           <span>Select a chat to start messaging</span>
@@ -143,10 +149,13 @@ const RightSide = () => {
         :
         <>
           <div className="top">
-            <div className="img">
-              <img src={require(`../../assets/images/${activeContact.avatar}`)} alt="avatar" />
+            <div className="arrow-back ico-btn" onClick={() => setActiveContact(null)}>
+              <img src={backArrow} />
             </div>
-            <p className="name">{activeContact.name}</p>
+            <div className="img">
+              <img src={require(`../../assets/images/${localContact.avatar}`)} alt="avatar" />
+            </div>
+            <p className="name">{localContact.name}</p>
           </div>
           <div className="main" ref={mainRef}>
             {messageList.map((msg, i) => (
@@ -170,7 +179,7 @@ const RightSide = () => {
                 : null
             }
           </div>
-          <div className="bottom">
+          <div className="bottom ico-btn">
             <input
               type="text"
               value={newMessage}
@@ -181,7 +190,7 @@ const RightSide = () => {
           </div>
         </>
       }
-      <ToastContainer limit={5}/>
+      <ToastContainer limit={5} />
     </div>
   )
 }

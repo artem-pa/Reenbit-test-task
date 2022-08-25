@@ -15,7 +15,7 @@ body {
 #root {
   overflow: hidden;
   display: grid;
-  grid-template: 100vh / 30% 70%;
+  grid-template: 100vh / 35% 65%;
 }
 
 * {
@@ -37,3 +37,8 @@ body {
   border: 3px solid transparent;
 }
 
+@media screen and (max-width: 768px) {
+  #root {
+    grid-template: 100vh / 100% 100%;
+  }
+}
