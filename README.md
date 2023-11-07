@@ -15,4 +15,4 @@ Builds the app for production to the `build` folder.
 
 ## Demo URL
 
-https://reenbit--test-task.herokuapp.com/
+https://artem-pa.github.io/Reenbit-test-task/
